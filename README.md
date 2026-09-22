@@ -56,3 +56,10 @@ Skills use semantic versions:
 - major: material change to agent behaviour or output contract
 
 Each skill should carry its own version and changelog section.
+
+
+## C# graph orchestrator
+
+The `orchestrator/` directory contains a small .NET 10 graph runtime for composing deterministic workflow nodes, constrained agent nodes, reusable skills, shared state, traceability and human approval gates.
+
+The first executable case is MyCycle delivery orchestration. It is deliberately API-free in CI and uses the same `AgentNode` contract that a Microsoft Agent Framework/OpenAI adapter can implement later.
