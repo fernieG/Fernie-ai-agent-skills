@@ -14,20 +14,13 @@ var intake = new DelegateNode("intake", (state, _) =>
     return NodeResult.Next("assess", "Delivery request captured.");
 });
 
-var assess = new DelegateNode("assess-baseline", (state, _) =>
-{
-    var currentUi = state.Get("app.currentUi");
-    var targetUi = state.Get("app.targetUi");
-
-    if (!string.Equals(currentUi, targetUi, StringComparison.Ordinal))
-    {
-        state.AddFinding(
-            $"Baseline mismatch: current UI is '{currentUi}', target UI is '{targetUi}'.");
-        return NodeResult.Next("gap", "Target experience is not yet implemented.");
-    }
-
-    return NodeResult.Next("aligned", "Current implementation matches target UI.");
-});
+var assess = new AgentNode(
+    id: "assess-baseline",
+    agentName: "BusinessAnalysis",
+    instructions: "Compare the current application baseline with the target experience. Return only gap or aligned.",
+    skills: ["skills/business-analysis/SKILL.md"],
+    allowedOutcomes: ["gap", "aligned"],
+    runtime: new MyCycleDemoAgentRuntime());
 
 var privacy = new DelegateNode("privacy-guard", (state, _) =>
 {
@@ -132,5 +125,34 @@ file sealed class DelegateNode(
     {
         cancellationToken.ThrowIfCancellationRequested();
         return ValueTask.FromResult(execute(state, cancellationToken));
+    }
+}
+
+
+file sealed class MyCycleDemoAgentRuntime : IAgentRuntime
+{
+    public ValueTask<AgentResponse> RunAsync(
+        AgentRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var currentUi = request.State["app.currentUi"];
+        var targetUi = request.State["app.targetUi"];
+
+        if (!string.Equals(currentUi, targetUi, StringComparison.Ordinal))
+        {
+            return ValueTask.FromResult(new AgentResponse(
+                Outcome: "gap",
+                Message: "Target experience is not yet implemented.",
+                Findings:
+                [
+                    $"Baseline mismatch: current UI is '{currentUi}', target UI is '{targetUi}'."
+                ]));
+        }
+
+        return ValueTask.FromResult(new AgentResponse(
+            Outcome: "aligned",
+            Message: "Current implementation matches target UI."));
     }
 }
