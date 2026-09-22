@@ -6,12 +6,12 @@ A small, typed, dependency-free graph engine for orchestrating agents and reusab
 
 The orchestration layer should decide **what runs next and under which conditions**. AI agents can reason inside graph nodes, while deterministic C# owns routing, state transitions, safety limits and human approval gates.
 
-The core intentionally has no AI SDK dependency. This keeps the graph cheap to run, easy to test and independent of any model provider. Agent Framework / OpenAI adapters can be added around individual nodes without changing the graph itself.
+The core intentionally has no AI SDK dependency. This keeps the graph cheap to run, easy to test and independent of any model provider. `AgentNode` constrains allowed outcomes and state mutations while `IAgentRuntime` is the adapter point for Microsoft Agent Framework / OpenAI later.
 
 ## Core concepts
 
 - `GraphState`: shared state passed through the workflow.
-- `IGraphNode`: one deterministic or agentic unit of work.
+- `IGraphNode`: one deterministic unit of work.\n- `AgentNode`: a constrained agentic node backed by an `IAgentRuntime`; model providers plug in behind this contract.
 - `NodeResult`: typed routing outcome from a node.
 - `GraphEdge`: route from `(node, outcome)` to the next node.
 - `GraphRunner`: validates and executes the graph with a loop safety limit.
