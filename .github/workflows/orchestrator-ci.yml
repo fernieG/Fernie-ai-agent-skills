@@ -1,0 +1,33 @@
+name: C# orchestrator CI
+
+on:
+  push:
+    branches:
+      - main
+      - feat/csharp-graph-orchestrator
+    paths:
+      - "orchestrator/**"
+      - ".github/workflows/orchestrator-ci.yml"
+  pull_request:
+    paths:
+      - "orchestrator/**"
+      - ".github/workflows/orchestrator-ci.yml"
+
+jobs:
+  build-and-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build graph core
+        run: dotnet build orchestrator/src/Fernie.AgentGraph/Fernie.AgentGraph.csproj --configuration Release
+
+      - name: Run MyCycle edge case
+        run: dotnet run --project orchestrator/examples/MyCycle.EdgeCase/MyCycle.EdgeCase.csproj --configuration Release
