@@ -1,0 +1,22 @@
+name: Workload Governance MVP CI
+on:
+  pull_request:
+    paths:
+      - 'apps/workload-governance-mvp/**'
+      - '.github/workflows/workload-governance-mvp.yml'
+  push:
+    paths:
+      - 'apps/workload-governance-mvp/**'
+      - '.github/workflows/workload-governance-mvp.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/workload-governance-mvp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
