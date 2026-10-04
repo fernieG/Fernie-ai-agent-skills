@@ -17,6 +17,9 @@ Reusable skills and operating models for AI agents supporting product, transform
 skills/
   business-analysis/
     SKILL.md
+apps/
+  workload-governance-mvp/
+    README.md
 templates/
   decision-log.md
   change-log.md
@@ -56,3 +59,11 @@ Skills use semantic versions:
 - major: material change to agent behaviour or output contract
 
 Each skill should carry its own version and changelog section.
+
+## Experimental applications
+
+### Workload & Data Governance MVP
+
+`apps/workload-governance-mvp/`
+
+A dependency-free browser prototype for workload intake and governed data-consumption requests. It is an application, not an agent skill: no LLM or autonomous approval is used. Human data-owner approval remains mandatory, and an application may expose data for consumption only when it is the declared golden source.
