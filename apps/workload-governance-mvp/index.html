@@ -5,46 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Workload &amp; Data Governance MVP</title>
   <style>
-    :root {
-      font-family: Inter, system-ui, sans-serif;
-      color: #182033;
-      background: #f5f7fb;
-      line-height: 1.45;
-    }
+    :root { font-family: Inter, system-ui, sans-serif; color: #182033; background: #f5f7fb; line-height: 1.45; }
     * { box-sizing: border-box; }
     body { margin: 0; }
-    header {
-      padding: 28px max(18px, 4vw);
-      background: #fff;
-      border-bottom: 1px solid #e2e7ef;
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      align-items: end;
-    }
+    header { padding: 28px max(18px, 4vw); background: #fff; border-bottom: 1px solid #e2e7ef; display: flex; justify-content: space-between; gap: 20px; align-items: end; }
     h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); letter-spacing: -.04em; }
     h2 { margin-top: 0; }
     p { margin: 6px 0; }
     .muted { color: #667287; }
-    .notice {
-      margin: 16px max(18px, 4vw);
-      padding: 12px 14px;
-      background: #fff7dc;
-      border: 1px solid #ecd996;
-      border-radius: 12px;
-    }
+    .notice { margin: 16px max(18px, 4vw); padding: 12px 14px; background: #fff7dc; border: 1px solid #ecd996; border-radius: 12px; }
+    .info-notice { background: #eaf1ff; border-color: #b8c8ea; }
     .error-notice { background: #fde8e8; border-color: #e9aaaa; }
     nav, main { padding: 0 max(18px, 4vw); }
     nav { display: flex; gap: 8px; margin-top: 18px; overflow: auto; }
-    button, .btn {
-      border: 0;
-      border-radius: 9px;
-      padding: 9px 12px;
-      background: #182033;
-      color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-    }
+    button, .btn { border: 0; border-radius: 9px; padding: 9px 12px; background: #182033; color: #fff; font-weight: 700; cursor: pointer; }
     nav button { background: transparent; color: #58647a; }
     nav button.on { background: #fff; color: #182033; border: 1px solid #dbe1ea; }
     .panel { display: none; padding: 16px 0 44px; }
@@ -54,13 +28,7 @@
     .card strong { font-size: 30px; display: block; }
     .head { display: flex; justify-content: space-between; gap: 16px; align-items: end; margin: 10px 0 12px; }
     .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    input, select, textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #cdd5e1;
-      border-radius: 8px;
-      font: inherit;
-    }
+    input, select, textarea { width: 100%; padding: 8px; border: 1px solid #cdd5e1; border-radius: 8px; font: inherit; }
     textarea { min-height: 80px; resize: vertical; }
     .actions input { width: 220px; }
     .table { overflow: auto; background: #fff; border: 1px solid #e0e6ef; border-radius: 12px; }
@@ -84,8 +52,6 @@
     .span { grid-column: 1 / -1; }
     label { font-size: 13px; font-weight: 700; color: #4d596d; }
     label input, label select, label textarea { margin-top: 4px; font-weight: 400; }
-    .checks label { display: inline-flex; gap: 6px; margin-right: 15px; align-items: center; }
-    .checks input { width: auto; margin: 0; }
     .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
     .secondary { background: #fff; color: #182033; border: 1px solid #d5dce7; }
     .policy { padding: 10px; border-radius: 8px; margin-top: 8px; }
@@ -93,14 +59,8 @@
     .bad-text { color: #8a2222; background: #fde8e8; }
     .attention li { margin: 7px 0; }
     footer { padding: 18px max(18px, 4vw); color: #68748a; font-size: 13px; }
-    @media (max-width: 800px) {
-      header, .head { align-items: start; flex-direction: column; }
-    }
-    @media (max-width: 560px) {
-      .grid { grid-template-columns: 1fr; }
-      .span { grid-column: auto; }
-      .actions input { width: 100%; }
-    }
+    @media (max-width: 800px) { header, .head { align-items: start; flex-direction: column; } }
+    @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } .span { grid-column: auto; } .actions input { width: 100%; } }
   </style>
 </head>
 <body>
@@ -117,7 +77,10 @@
   </header>
 
   <div class="notice">
-    <strong>Prototype safety:</strong> data is stored only in this browser. Human decisions are recorded as local attestations, not authenticated proof. Do not enter confidential, personal, regulated, or employer-sensitive information in a publicly hosted prototype.
+    <strong>Prototype safety:</strong> data is stored only in this browser. Human decisions are local attestations, not authenticated proof. Do not enter confidential, personal, regulated, or employer-sensitive information in a publicly hosted prototype.
+  </div>
+  <div class="notice info-notice">
+    <strong>Reference controls:</strong> golden-source ownership, known consumers and existing flows are not declared by the requester. This MVP resolves them from a separate synthetic reference snapshot. An enterprise version must connect this contract to authoritative application/data catalogues and the architecture repository.
   </div>
   <div id="loadWarning" class="notice error-notice" hidden></div>
 
@@ -160,7 +123,7 @@
       <div class="head">
         <div>
           <h2>Data-consumption requests</h2>
-          <p class="muted">Golden-source policy, human approval and architecture validation are independent controls.</p>
+          <p class="muted">Reference policy, human approval and architecture validation are independent controls.</p>
         </div>
         <div class="actions">
           <input id="dataSearch" aria-label="Search data requests" placeholder="Search...">
@@ -181,7 +144,7 @@
       <div class="head">
         <div>
           <h2>Controlled flows</h2>
-          <p class="muted">Only requests that still satisfy every approval invariant appear here.</p>
+          <p class="muted">Only requests that still satisfy every approval invariant and current reference fact appear here.</p>
         </div>
       </div>
       <div class="table">
@@ -222,25 +185,18 @@
     <form id="dataForm">
       <input type="hidden" name="recordId">
       <h2>Data-consumption request</h2>
-      <p class="muted">Editing a governed field creates a new version and invalidates previous decisions.</p>
+      <p class="muted">Golden source, existing flow and known-consumer facts are resolved from reference data and cannot be self-declared here. Editing a governed request field creates a new version and invalidates previous decisions.</p>
       <div class="grid">
         <label>Received<input name="received" type="date" required></label>
         <label>Requester / team<input name="requester" required></label>
         <label>Application exposing or storing the data<input name="sourceApplication" required></label>
-        <label>Golden source application<input name="goldenSourceApplication" required></label>
         <label>Consuming application<input name="consumerApplication" required></label>
-        <label>Requested data<input name="dataElement" required></label>
+        <label class="span">Requested data<input name="dataElement" required></label>
         <label class="span">Expected business definition<textarea name="expectedDefinition" required></textarea></label>
-        <label class="span">Use case description<textarea name="useCaseDescription" required></textarea></label>
+        <label class="span">Use case description<textarea name="useCaseDescription" minlength="20" required></textarea></label>
         <label>Frequency<select name="frequency" required><option value="">Select...</option><option>Real-time</option><option>Daily</option><option>Weekly</option><option>Monthly</option><option>Ad hoc</option></select></label>
         <label>Expected interface<select name="interfaceType" required><option value="">Select...</option><option>API</option><option>File</option><option>Database / view</option><option>Event / message</option><option>Manual</option><option>Unknown / to define</option></select></label>
         <label>Criticality<select name="criticality" required><option value="">Select...</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></label>
-        <div class="span checks">
-          <strong>Architecture triggers</strong><br>
-          <label><input type="checkbox" name="newFlow">New flow</label>
-          <label><input type="checkbox" name="flowChanged">Changed flow</label>
-          <label><input type="checkbox" name="newConsumer">New consumer</label>
-        </div>
         <p id="policyHint" class="span policy"></p>
       </div>
       <div class="form-actions">
@@ -256,7 +212,7 @@
       <h2>Human data-consumption decision</h2>
       <p id="humanSummary"></p>
       <p id="humanPolicy" class="policy"></p>
-      <p class="muted">The decision is bound to the current request version. Any governed change invalidates it.</p>
+      <p class="muted">The decision is bound to the current request version and current reference facts. Any governed request change or reference-fact change makes it stale.</p>
       <div class="grid">
         <label>Decision<select name="decision"><option>Approved</option><option>Rejected</option></select></label>
         <label>Human approver / data owner<input name="approver" required></label>
@@ -274,7 +230,7 @@
       <input type="hidden" name="recordId">
       <h2>Architecture decision</h2>
       <p id="architectureSummary"></p>
-      <p class="muted">This decision is separate from the human authorisation of the consumer.</p>
+      <p class="muted">Architecture triggers are derived from reference facts plus controlled interface/criticality values; they are not requester checkboxes.</p>
       <div class="grid">
         <label>Decision<select name="decision"><option>Validated</option><option>Rejected</option></select></label>
         <label>Architecture reviewer<input name="reviewer" required></label>
@@ -288,7 +244,7 @@
   </dialog>
 
   <footer>
-    Generic MVP only: no authentication, server persistence, immutable audit log, maker/checker enforcement or regulatory evidence retention. Human names are local attestations until enterprise identity and access controls are implemented.
+    Generic MVP only. The current reference snapshot is synthetic and must be replaced by authoritative upstream catalogue/repository integrations. There is no authentication, RBAC, server persistence, immutable audit log, maker/checker enforcement or regulatory evidence retention. Human names remain local attestations until enterprise identity and access controls are integrated.
   </footer>
   <script type="module" src="./app.mjs"></script>
 </body>
