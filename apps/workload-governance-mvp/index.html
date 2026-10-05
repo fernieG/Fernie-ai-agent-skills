@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workload &amp; Data Governance MVP</title>
+  <style>
+    :root { font-family: Inter, system-ui, sans-serif; color: #182033; background: #f5f7fb; line-height: 1.45; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { padding: 28px max(18px, 4vw); background: #fff; border-bottom: 1px solid #e2e7ef; display: flex; justify-content: space-between; gap: 20px; align-items: end; }
+    h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); letter-spacing: -.04em; }
+    h2 { margin-top: 0; }
+    p { margin: 6px 0; }
+    .muted { color: #667287; }
+    .notice { margin: 16px max(18px, 4vw); padding: 12px 14px; background: #fff7dc; border: 1px solid #ecd996; border-radius: 12px; }
+    .info-notice { background: #eaf1ff; border-color: #b8c8ea; }
+    .error-notice { background: #fde8e8; border-color: #e9aaaa; }
+    nav, main { padding: 0 max(18px, 4vw); }
+    nav { display: flex; gap: 8px; margin-top: 18px; overflow: auto; }
+    button, .btn { border: 0; border-radius: 9px; padding: 9px 12px; background: #182033; color: #fff; font-weight: 700; cursor: pointer; }
+    nav button { background: transparent; color: #58647a; }
+    nav button.on { background: #fff; color: #182033; border: 1px solid #dbe1ea; }
+    .panel { display: none; padding: 16px 0 44px; }
+    .panel.on { display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+    .card, .box { background: #fff; border: 1px solid #e0e6ef; border-radius: 14px; padding: 16px; }
+    .card strong { font-size: 30px; display: block; }
+    .head { display: flex; justify-content: space-between; gap: 16px; align-items: end; margin: 10px 0 12px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    input, select, textarea { width: 100%; padding: 8px; border: 1px solid #cdd5e1; border-radius: 8px; font: inherit; }
+    textarea { min-height: 80px; resize: vertical; }
+    .actions input { width: 220px; }
+    .table { overflow: auto; background: #fff; border: 1px solid #e0e6ef; border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    #data table { min-width: 1450px; }
+    #flows table { min-width: 1200px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #edf0f5; vertical-align: top; }
+    th { font-size: 12px; text-transform: uppercase; color: #68748a; background: #fafbfc; }
+    small { color: #667287; }
+    .badge { display: inline-block; padding: 2px 7px; border-radius: 999px; background: #edf0f5; font-size: 12px; font-weight: 700; }
+    .warn { background: #fff0c9; }
+    .good { background: #e5f4e9; }
+    .bad { background: #fde8e8; }
+    .link { background: transparent; color: #2d467e; padding: 3px 2px; text-align: left; }
+    .row-actions { min-width: 155px; }
+    .row-actions .link { display: block; margin-bottom: 3px; }
+    dialog { width: min(840px, calc(100vw - 24px)); border: 0; border-radius: 14px; padding: 0; max-height: calc(100vh - 24px); }
+    dialog::backdrop { background: #11182766; }
+    form { padding: 18px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .span { grid-column: 1 / -1; }
+    label { font-size: 13px; font-weight: 700; color: #4d596d; }
+    label input, label select, label textarea { margin-top: 4px; font-weight: 400; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .secondary { background: #fff; color: #182033; border: 1px solid #d5dce7; }
+    .policy { padding: 10px; border-radius: 8px; margin-top: 8px; }
+    .good-text { color: #165b2d; background: #e5f4e9; }
+    .bad-text { color: #8a2222; background: #fde8e8; }
+    .attention li { margin: 7px 0; }
+    footer { padding: 18px max(18px, 4vw); color: #68748a; font-size: 13px; }
+    @media (max-width: 800px) { header, .head { align-items: start; flex-direction: column; } }
+    @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } .span { grid-column: auto; } .actions input { width: 100%; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="muted">Generic governance prototype</div>
+      <h1>Workload &amp; Data Governance</h1>
+      <p class="muted">One front door for demand and governed data-consumption requests.</p>
+    </div>
+    <div class="actions">
+      <button id="backup">Backup JSON</button>
+      <label class="btn secondary">Import JSON<input id="restore" type="file" accept="application/json" hidden></label>
+    </div>
+  </header>
+
+  <div class="notice">
+    <strong>Prototype safety:</strong> data is stored only in this browser. Human decisions are local attestations, not authenticated proof. Do not enter confidential, personal, regulated, or employer-sensitive information in a publicly hosted prototype.
+  </div>
+  <div class="notice info-notice">
+    <strong>Reference controls:</strong> golden-source ownership, known consumers and existing flows are not declared by the requester. This MVP resolves them from a separate synthetic reference snapshot. An enterprise version must connect this contract to authoritative application/data catalogues and the architecture repository.
+  </div>
+  <div id="loadWarning" class="notice error-notice" hidden></div>
+
+  <nav aria-label="Application sections">
+    <button class="on" data-tab="dash">Dashboard</button>
+    <button data-tab="work">Workload</button>
+    <button data-tab="data">Data requests</button>
+    <button data-tab="flows">Controlled flows</button>
+  </nav>
+
+  <main>
+    <section id="dash" class="panel on">
+      <div id="cards" class="cards"></div>
+      <div class="box" style="margin-top:12px">
+        <h2>Needs attention</h2>
+        <ul id="attention" class="attention"></ul>
+      </div>
+    </section>
+
+    <section id="work" class="panel">
+      <div class="head">
+        <div>
+          <h2>Workload backlog</h2>
+          <p class="muted">Make requests, capacity and prioritisation decisions visible.</p>
+        </div>
+        <div class="actions">
+          <input id="workSearch" aria-label="Search workload" placeholder="Search...">
+          <button id="newWork">+ Add request</button>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead><tr><th>ID</th><th>Request</th><th>Priority</th><th>Status</th><th>Planned start</th><th>Decision</th><th>Action</th></tr></thead>
+          <tbody id="workRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="data" class="panel">
+      <div class="head">
+        <div>
+          <h2>Data-consumption requests</h2>
+          <p class="muted">Reference policy, human approval and architecture validation are independent controls.</p>
+        </div>
+        <div class="actions">
+          <input id="dataSearch" aria-label="Search data requests" placeholder="Search...">
+          <button id="newData">+ New data request</button>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Flow / data</th><th>Use case</th><th>Golden-source policy</th><th>Human decision</th><th>Architecture</th><th>Status / control</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="dataRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="flows" class="panel">
+      <div class="head">
+        <div>
+          <h2>Controlled flows</h2>
+          <p class="muted">Only requests that still satisfy every approval invariant and current reference fact appear here.</p>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr><th>Request</th><th>Source</th><th>Consumer</th><th>Data</th><th>Golden source</th><th>Use case</th><th>Interface</th><th>Human approver</th><th>Status</th></tr>
+          </thead>
+          <tbody id="flowRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="workDlg">
+    <form id="workForm">
+      <input type="hidden" name="recordId">
+      <h2>Workload request</h2>
+      <div class="grid">
+        <label>Received<input name="received" type="date" required></label>
+        <label>Requester / team<input name="requester" required></label>
+        <label class="span">Request title<input name="title" required></label>
+        <label>Application / product<input name="application"></label>
+        <label>Effort<input name="effort" placeholder="2d, TBD..."></label>
+        <label>Priority<select name="priority"><option>Unprioritised</option><option>P1</option><option>P2</option><option>P3</option></select></label>
+        <label>Planned start<input name="plannedStart" type="date"></label>
+        <label>Status<select id="workStatus" name="status"></select></label>
+        <label class="span">Decision / constraint<input name="decision" placeholder="Earlier start requires reprioritisation"></label>
+        <label class="span">Notes<textarea name="notes"></textarea></label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="secondary" data-close="workDlg">Cancel</button>
+        <button>Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dataDlg">
+    <form id="dataForm">
+      <input type="hidden" name="recordId">
+      <h2>Data-consumption request</h2>
+      <p class="muted">Golden source, existing flow and known-consumer facts are resolved from reference data and cannot be self-declared here. Editing a governed request field creates a new version and invalidates previous decisions.</p>
+      <div class="grid">
+        <label>Received<input name="received" type="date" required></label>
+        <label>Requester / team<input name="requester" required></label>
+        <label>Application exposing or storing the data<input name="sourceApplication" required></label>
+        <label>Consuming application<input name="consumerApplication" required></label>
+        <label class="span">Requested data<input name="dataElement" required></label>
+        <label class="span">Expected business definition<textarea name="expectedDefinition" required></textarea></label>
+        <label class="span">Use case description<textarea name="useCaseDescription" minlength="20" required></textarea></label>
+        <label>Frequency<select name="frequency" required><option value="">Select...</option><option>Real-time</option><option>Daily</option><option>Weekly</option><option>Monthly</option><option>Ad hoc</option></select></label>
+        <label>Expected interface<select name="interfaceType" required><option value="">Select...</option><option>API</option><option>File</option><option>Database / view</option><option>Event / message</option><option>Manual</option><option>Unknown / to define</option></select></label>
+        <label>Criticality<select name="criticality" required><option value="">Select...</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></label>
+        <p id="policyHint" class="span policy"></p>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="secondary" data-close="dataDlg">Cancel</button>
+        <button>Save request</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="humanDlg">
+    <form id="humanForm">
+      <input type="hidden" name="recordId">
+      <h2>Human data-consumption decision</h2>
+      <p id="humanSummary"></p>
+      <p id="humanPolicy" class="policy"></p>
+      <p class="muted">The decision is bound to the current request version and current reference facts. Any governed request change or reference-fact change makes it stale.</p>
+      <div class="grid">
+        <label>Decision<select name="decision"><option>Approved</option><option>Rejected</option></select></label>
+        <label>Human approver / data owner<input name="approver" required></label>
+        <label class="span">Decision comment<textarea name="comment"></textarea></label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="secondary" data-close="humanDlg">Cancel</button>
+        <button>Record human decision</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="architectureDlg">
+    <form id="architectureForm">
+      <input type="hidden" name="recordId">
+      <h2>Architecture decision</h2>
+      <p id="architectureSummary"></p>
+      <p class="muted">Architecture triggers are derived from reference facts plus controlled interface/criticality values; they are not requester checkboxes.</p>
+      <div class="grid">
+        <label>Decision<select name="decision"><option>Validated</option><option>Rejected</option></select></label>
+        <label>Architecture reviewer<input name="reviewer" required></label>
+        <label class="span">Decision comment<textarea name="comment"></textarea></label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="secondary" data-close="architectureDlg">Cancel</button>
+        <button>Record architecture decision</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer>
+    Generic MVP only. The current reference snapshot is synthetic and must be replaced by authoritative upstream catalogue/repository integrations. There is no authentication, RBAC, server persistence, immutable audit log, maker/checker enforcement or regulatory evidence retention. Human names remain local attestations until enterprise identity and access controls are integrated.
+  </footer>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

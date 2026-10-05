@@ -1,0 +1,32 @@
+name: Workload Governance MVP CI
+on:
+  pull_request:
+    paths:
+      - 'apps/workload-governance-mvp/**'
+      - '.github/workflows/workload-governance-mvp.yml'
+  push:
+    paths:
+      - 'apps/workload-governance-mvp/**'
+      - '.github/workflows/workload-governance-mvp.yml'
+permissions:
+  contents: read
+concurrency:
+  group: workload-governance-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/workload-governance-mvp
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+      - run: npm run verify
+      - name: Parse HTML
+        run: >-
+          python3 -c "from html.parser import HTMLParser;
+          p=HTMLParser(); p.feed(open('index.html', encoding='utf-8').read());
+          p.close(); print('HTML parse: OK')"
