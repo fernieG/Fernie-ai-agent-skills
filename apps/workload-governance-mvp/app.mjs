@@ -17,8 +17,8 @@ import {
   validateImportedState
 } from './domain.mjs';
 
-const STORAGE_KEY = 'wg-mvp-v2';
-const LEGACY_STORAGE_KEY = 'wg-mvp-v1';
+const STORAGE_KEY = 'wg-mvp-v3';
+const LEGACY_STORAGE_KEYS = ['wg-mvp-v2', 'wg-mvp-v1'];
 const MAX_IMPORT_BYTES = 2 * 1024 * 1024;
 
 const seed = {
@@ -61,11 +61,7 @@ const seed = {
         useCaseDescription: 'Daily portfolio monitoring and exception handling.',
         frequency: 'Daily',
         interfaceType: 'API',
-        criticality: 'High',
-        goldenSourceApplication: 'Risk Data Service',
-        newFlow: true,
-        flowChanged: false,
-        newConsumer: true
+        criticality: 'High'
       },
       'DATA-DEMO-001'
     ),
@@ -77,14 +73,10 @@ const seed = {
         consumerApplication: 'Analytics Workbench',
         dataElement: 'Customer risk segment',
         expectedDefinition: 'Current governed customer risk segment.',
-        useCaseDescription: 'Exploratory portfolio segmentation.',
+        useCaseDescription: 'Exploratory portfolio segmentation for prioritised risk analysis.',
         frequency: 'Daily',
         interfaceType: 'API',
-        criticality: 'High',
-        goldenSourceApplication: 'Customer Master',
-        newFlow: true,
-        flowChanged: false,
-        newConsumer: true
+        criticality: 'High'
       },
       'DATA-DEMO-002'
     )
@@ -99,12 +91,12 @@ function cloneSeed() {
 }
 
 function loadState() {
-  for (const key of [STORAGE_KEY, LEGACY_STORAGE_KEY]) {
+  for (const key of [STORAGE_KEY, ...LEGACY_STORAGE_KEYS]) {
     const stored = localStorage.getItem(key);
     if (!stored) continue;
     try {
       const validated = validateImportedState(JSON.parse(stored));
-      if (key === LEGACY_STORAGE_KEY) {
+      if (key !== STORAGE_KEY) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(validated));
       }
       return validated;
@@ -152,11 +144,7 @@ function tone(status) {
 }
 
 function formFields(form) {
-  const values = Object.fromEntries(new FormData(form).entries());
-  for (const key of ['newFlow', 'flowChanged', 'newConsumer']) {
-    if (form.elements[key]) values[key] = form.elements[key].checked;
-  }
-  return values;
+  return Object.fromEntries(new FormData(form).entries());
 }
 
 function setOptions(element, values) {
@@ -177,8 +165,10 @@ function render() {
   const workload = workloadSummary(state.workload);
   const requests = dataRequestSummary(state.dataRequests);
 
-  document.getElementById('loadWarning').textContent = loadWarning;
-  document.getElementById('loadWarning').hidden = !loadWarning;
+  const warning = document.getElementById('loadWarning');
+  warning.textContent = loadWarning;
+  warning.hidden = !loadWarning;
+
   document.getElementById('cards').innerHTML = [
     ['Open workload', workload.open, workload.awaitingPriority + ' awaiting priority'],
     ['In progress', workload.inProgress, workload.blocked + ' blocked'],
@@ -198,7 +188,7 @@ function render() {
   state.dataRequests.forEach((request) => {
     const policy = goldenSourcePolicy(request);
     if (request.status === 'Information required') {
-      attention.push(request.id + ' — required information is missing');
+      attention.push(request.id + ' — ' + policy.reason);
     } else if (!policy.eligible) {
       attention.push(request.id + ' — ' + policy.reason);
     } else if (request.humanApprovalStatus === 'Pending') {
@@ -250,12 +240,15 @@ function renderDataRequests() {
     const architectureAction = architectureRequired
       ? '<button class="link" data-architecture-decision="' + esc(request.id) + '">Architecture decision</button>'
       : '';
+    const sourceBadge = policy.resolved
+      ? (policy.eligible ? 'Golden source confirmed' : 'Refused')
+      : 'Reference missing';
 
     return '<tr><td><strong>' + esc(request.id) + '</strong><br><small>v' +
       esc(request.version) + '</small></td><td><strong>' + esc(request.sourceApplication) +
       '</strong> → <strong>' + esc(request.consumerApplication) + '</strong><br><small>' +
       esc(request.dataElement) + '</small></td><td>' + esc(request.useCaseDescription) +
-      '</td><td>' + badge(policy.eligible ? 'Golden source confirmed' : 'Refused', policy.eligible ? 'good' : 'bad') +
+      '</td><td>' + badge(sourceBadge, policy.eligible ? 'good' : 'bad') +
       '<br><small>' + esc(policy.reason) + '</small></td><td>' +
       badge(request.humanApprovalStatus, tone(request.humanApprovalStatus)) +
       '<br><small>' + esc(request.humanApprover || 'No human decision') + '</small></td><td>' +
@@ -300,8 +293,7 @@ function resetDataForm() {
 function fillForm(form, item) {
   for (const [key, value] of Object.entries(item)) {
     if (!form.elements[key]) continue;
-    if (form.elements[key].type === 'checkbox') form.elements[key].checked = Boolean(value);
-    else form.elements[key].value = value ?? '';
+    form.elements[key].value = value ?? '';
   }
 }
 
