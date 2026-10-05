@@ -66,4 +66,4 @@ Each skill should carry its own version and changelog section.
 
 `apps/workload-governance-mvp/`
 
-A dependency-free browser prototype for workload intake and governed data-consumption requests. It is an application, not an agent skill: no LLM or autonomous approval is used. Human data-owner approval remains mandatory, and an application may expose data for consumption only when it is the declared golden source.
+A dependency-free browser prototype for workload intake and governed data-consumption requests. It is an application, not an agent skill: no LLM or autonomous approval is used. Human data-owner approval remains mandatory. Golden-source ownership and architecture-trigger facts are resolved from a separate reference-data contract rather than requester self-declarations; the MVP uses a synthetic snapshot that must be replaced by authoritative upstream catalogues/repositories for enterprise use.
