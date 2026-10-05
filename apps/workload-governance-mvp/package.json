@@ -1,10 +1,10 @@
 {
   "name": "workload-data-governance-mvp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check domain.mjs && node --check app.mjs && node --check tests/domain.test.mjs",
+    "check": "node --check reference-data.mjs && node --check domain.mjs && node --check app.mjs && node --check tests/domain.test.mjs && node --check tests/dom-contract.test.mjs",
     "test": "node --test tests/*.test.mjs",
     "verify": "npm run check && npm test"
   }
