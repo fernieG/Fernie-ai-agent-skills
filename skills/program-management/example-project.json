@@ -1,0 +1,78 @@
+{
+  "name": "Northstar Demo Delivery (synthetic)",
+  "asOf": "2026-10-11",
+  "milestones": [
+    {
+      "id": "M-LAUNCH",
+      "title": "Pilot delivery",
+      "owner": "Delivery lead",
+      "status": "in_progress",
+      "due": "2026-10-20",
+      "dependsOn": ["T-API"],
+      "priority": "critical"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T-SCHEMA",
+      "title": "Approve synthetic schema for the demo",
+      "owner": "Engineering lead",
+      "status": "done",
+      "due": "2026-10-06",
+      "evidence": ["demo://records/T-SCHEMA/acceptance"]
+    },
+    {
+      "id": "T-API",
+      "title": "Implement API interface",
+      "owner": "Engineering lead",
+      "status": "in_progress",
+      "due": "2026-10-09",
+      "priority": "critical",
+      "dependsOn": ["T-SCHEMA"]
+    },
+    {
+      "id": "T-REVIEW",
+      "title": "Perform integration review",
+      "owner": "",
+      "status": "blocked",
+      "due": "2026-10-17",
+      "dependsOn": ["T-API"]
+    }
+  ],
+  "risks": [
+    {
+      "id": "R-CAPACITY",
+      "title": "Limited test capacity",
+      "status": "open",
+      "owner": "",
+      "mitigation": "",
+      "mitigationDue": "2026-10-08"
+    }
+  ],
+  "decisionRequests": [
+    {
+      "id": "D-FOLLOWUP",
+      "kind": "draft_followup",
+      "sourceIds": ["T-API"],
+      "description": "Prepare internal overdue action draft",
+      "impact": "low",
+      "reversible": true,
+      "externalEffect": false,
+      "changesBaseline": false,
+      "protectedDomain": false,
+      "budgetDelta": 0
+    },
+    {
+      "id": "D-BASELINE",
+      "kind": "change_baseline",
+      "sourceIds": ["M-LAUNCH", "T-API"],
+      "description": "Move the committed launch date",
+      "impact": "high",
+      "reversible": false,
+      "externalEffect": true,
+      "changesBaseline": true,
+      "protectedDomain": false,
+      "budgetDelta": 0
+    }
+  ]
+}
