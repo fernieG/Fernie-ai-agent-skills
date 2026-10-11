@@ -1,0 +1,30 @@
+name: Program Manager Skill CI
+on:
+  pull_request:
+    paths:
+      - 'skills/program-management/**'
+      - 'templates/project-decision-rights.md'
+      - '.github/workflows/program-management-ci.yml'
+  push:
+    paths:
+      - 'skills/program-management/**'
+      - 'templates/project-decision-rights.md'
+      - '.github/workflows/program-management-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+      - name: Test decision rights and delivery diagnostics
+        run: node --test skills/program-management/tests/assessor.test.mjs
+      - name: Smoke test synthetic red status
+        run: |
+          node skills/program-management/assessor.mjs skills/program-management/example-project.json > /tmp/pm-report.json
+          node --input-type=module -e "import fs from 'node:fs'; const r=JSON.parse(fs.readFileSync('/tmp/pm-report.json')); if(r.status!=='RED'||r.autoDecisions.length!==1||r.humanDecisions.length!==1) process.exit(1);"
