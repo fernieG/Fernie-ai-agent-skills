@@ -10,19 +10,23 @@ Reusable skills and operating models for AI agents supporting product, transform
 - Prefer traceable answers over unsupported inference.
 - Preserve decisions, change history, and document versions.
 - Never silently convert assumptions into approved requirements.
+- **Automate reversible, low-impact local work; reserve consequential approvals for accountable humans.**
 
 ## Repository structure
 
-```text
-skills/
-  business-analysis/
-    SKILL.md
-templates/
-  decision-log.md
-  change-log.md
-  traceability-matrix.md
-  requirement-record.md
-```
+    skills/
+      business-analysis/SKILL.md
+      program-management/
+        SKILL.md
+        assessor.mjs
+        example-project.json
+        tests/assessor.test.mjs
+    templates/
+      decision-log.md
+      change-log.md
+      traceability-matrix.md
+      requirement-record.md
+      project-decision-rights.md
 
 ## Available skills
 
@@ -44,6 +48,25 @@ A reusable operating model for an AI Business Analyst / MOA agent that can:
 - identify accountability gaps.
 
 The skill is intentionally domain-neutral. Application-specific specifications, data dictionaries, examples, internal processes, and business rules should be supplied separately as private context.
+
+### Program Manager / Delivery Challenger — v0.1
+
+`skills/program-management/SKILL.md`
+
+Evidence-first program-management policy with bounded autonomy. It automatically prepares delivery diagnostics, risk/ownership findings, and local follow-up drafts, while reserving changes to baselines, budgets, scope, approvals and external commitments for accountable humans.
+
+A dependency-free Node assessor and synthetic fixture are included. They are **not** an LLM agent or an integrated external action service.
+
+Try it:
+
+    node skills/program-management/assessor.mjs skills/program-management/example-project.json
+    node --test skills/program-management/tests/assessor.test.mjs
+
+See `skills/program-management/README.md` for the input contract and safety limits.
+
+## Experimental work in separate pull requests
+
+The C# Agent Graph Orchestrator (PR #1) and browser-based Workload & Data Governance MVP (PR #2) have not been merged to main. They are not integrated into the Program Manager Skill in this release.
 
 ## Versioning
 
