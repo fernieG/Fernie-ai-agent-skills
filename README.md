@@ -1,6 +1,10 @@
 # Fernie AI Agent Skills
 
-Reusable skills and operating models for AI agents supporting product, transformation, analysis, and delivery work.
+**An autonomous, outcome-driven delivery organisation made of collaborating AI agents.** The Program Manager owns problems end to end: specialists ask one another for the missing expertise, produce actual solutions, independently verify results and involve humans only when accountable judgment or authorisation is genuinely needed.
+
+**Mission:** Solve problems, don't just report, assign, or escalate them. A handoff, meeting, recommendation, or green status report is not evidence that an issue was fixed.
+
+Reusable, provider-neutral AI skills and operating contracts for product, transformation, analysis and software delivery. Real model-backed specialist agents and authorised external execution remain future integrations.
 
 ## Principles
 
@@ -11,6 +15,8 @@ Reusable skills and operating models for AI agents supporting product, transform
 - Preserve decisions, change history, and document versions.
 - Never silently convert assumptions into approved requirements.
 - **Automate reversible, low-impact local work; reserve consequential approvals for accountable humans.**
+- **Every agent owns a deliverable, and may ask another specialist agent for help without routing through a human.**
+- **The PM owns verified resolution, not the number of actions or meetings.**
 
 ## Repository structure
 
@@ -21,6 +27,12 @@ Reusable skills and operating models for AI agents supporting product, transform
         assessor.mjs
         example-project.json
         tests/assessor.test.mjs
+      agent-collaboration/
+        SKILL.md
+        coordinator.mjs
+        examples/demo.mjs
+        examples/mycycle-prediction.mjs
+        tests/
     templates/
       decision-log.md
       change-log.md
@@ -49,11 +61,11 @@ A reusable operating model for an AI Business Analyst / MOA agent that can:
 
 The skill is intentionally domain-neutral. Application-specific specifications, data dictionaries, examples, internal processes, and business rules should be supplied separately as private context.
 
-### Program Manager / Delivery Challenger — v0.1
+### Program Manager / Delivery Challenger — v0.2 policy, v0.1 assessor
 
 `skills/program-management/SKILL.md`
 
-Evidence-first program-management policy with bounded autonomy. It automatically prepares delivery diagnostics, risk/ownership findings, and local follow-up drafts, while reserving changes to baselines, budgets, scope, approvals and external commitments for accountable humans.
+An evidence-first PM that **coordinates specialists to solve blockers rather than merely reporting them**. It automatically prepares delivery diagnostics and source-linked follow-ups, attempts permitted local solutions, demands independent acceptance evidence, and reserves changes to baselines, budgets, scope, approvals and external commitments for accountable humans.
 
 A dependency-free Node assessor and synthetic fixture are included. They are **not** an LLM agent or an integrated external action service.
 
@@ -63,6 +75,21 @@ Try it:
     node --test skills/program-management/tests/assessor.test.mjs
 
 See `skills/program-management/README.md` for the input contract and safety limits.
+
+
+### Agent-to-Agent Resolution — v0.1 experimental
+
+`skills/agent-collaboration/SKILL.md`
+
+The PM asks a specialist for a concrete deliverable; that specialist can request another specialist directly. The coordinator validates source-linked artifacts, prevents endless ping-pong, and rejects unverified completion claims.
+
+**Proofs of concept (synthetic data only):**
+
+    node skills/agent-collaboration/examples/demo.mjs
+    node skills/agent-collaboration/examples/mycycle-prediction.mjs
+    node --test skills/agent-collaboration/tests/*.test.mjs
+
+The MyCycle scenario demonstrates PM → data validation → prediction → QA, returning a calendar-only next-period estimate and independently checked result. It does not access anyone's private history or run model-backed agents. No client/medical data is committed here.
 
 ## Experimental work in separate pull requests
 
