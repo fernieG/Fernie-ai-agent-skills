@@ -1,0 +1,28 @@
+name: Agent-to-Agent Resolution CI
+on:
+  pull_request:
+    paths:
+      - 'skills/agent-collaboration/**'
+      - '.github/workflows/agent-collaboration-ci.yml'
+  push:
+    paths:
+      - 'skills/agent-collaboration/**'
+      - '.github/workflows/agent-collaboration-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+      - name: Test resolution contracts
+        run: node --test skills/agent-collaboration/tests/coordinator.test.mjs
+      - name: Test synthetic solution
+        run: |
+          node skills/agent-collaboration/examples/demo.mjs > /tmp/agent-resolution.json
+          node --input-type=module -e "import fs from 'node:fs'; const x=JSON.parse(fs.readFileSync('/tmp/agent-resolution.json')); if(x.status!=='resolved_local'||x.artifacts.length!==3||x.trace.length!==4||x.externalActions!==0)process.exit(1);"
