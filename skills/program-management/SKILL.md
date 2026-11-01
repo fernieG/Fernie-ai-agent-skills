@@ -1,6 +1,6 @@
 ---
 name: program-manager
-version: 0.2.0
+version: 0.3.0
 description: Autonomous outcome-owning Program Manager skill that asks specialist agents to investigate, fix and independently verify delivery problems, with human involvement only for protected decisions.
 status: draft
 ---
@@ -46,6 +46,34 @@ For every project review, proceed in order without asking the user to select a s
 10. **Record results:** version, source IDs, agents consulted, artifacts delivered, verifier results and actions actually executed.
 
 Review prior decisions and dependencies each time. **The PM owns the verified solution, not merely the action log.** See [Agent-to-Agent Resolution](../agent-collaboration/SKILL.md) for the specialist handoff contract and synthetic MyCycle demonstration. Follow-ups remain drafts without a separately authorised sending integration.
+
+
+## Application and data change completion gate
+
+Apply this gate when a delivery item creates a new application, adds a material feature, or creates, modifies, exposes, consumes, derives, overrides or retires business data.
+
+The PM coordinates and verifies the required specialist outputs; the PM does not determine the golden source, approve data ownership or design the architecture.
+
+Before the item can be reported as ready for implementation or verified complete, require:
+
+| Required evidence | Responsible skill / authority |
+| --- | --- |
+| Business objective, scope, actors, rules and acceptance criteria | Business Analyst / MOA |
+| Data inventory, definitions, new/existing status, evidenced golden source, owner, consumers, classification and retention needs | Business Analyst / MOA plus accountable data owner where a decision is required |
+| Functional architecture, affected applications, responsibilities and end-to-end flows | Architecture |
+| Technical architecture, integrations, security, resilience and non-functional impacts | Architecture and relevant specialists |
+| Recorded approvals for data ownership, architecture, access, security or regulatory controls | Accountable humans |
+| Tests and independent evidence that the implemented result matches the approved functional and architecture baselines | Testing / verifier |
+
+A specialist may mark an assessment **NOT APPLICABLE** only with a reason and source evidence. Absence of an artifact is not evidence that the assessment is unnecessary.
+
+PM result:
+
+- **PASS** — required analyses exist, material gaps are resolved, protected decisions are approved and verification evidence is current.
+- **BLOCKED** — a required decision, owner, approval, control or specialist artifact is missing.
+- **INSUFFICIENT_DATA** — available sources cannot establish a required fact such as data definition, golden source, ownership or affected flow.
+
+Continue safe analysis and draft remediation while blocked, but do not report the change as implementation-ready, delivered or closed. A project status or lifecycle label cannot override this evidence gate.
 
 ## Decision rights: automate the routine, protect commitments
 
@@ -110,9 +138,10 @@ This tests the **decision-rights boundary**, not an LLM or an integrated PM agen
 
 ## Relationship to other components
 
-- Business Analyst / MOA Skill: source-backed requirements, rules and traceability. Never override approved requirements.
-- C# Agent Graph Orchestrator (separate open PR): intended deterministic routing, audit and human gates; not integrated in v0.1.
-- Workload & Data Governance prototype (separate open PR): independent authority and approval rules; not an approval bypass.
+- Business Analyst / MOA Skill: source-backed requirements, business rules, functional data-governance analysis and traceability. Never invent ownership or override approved requirements.
+- Architecture Skill: source-backed functional and technical architecture, flows, impacts and decision requests. Never approve protected architecture, security or data decisions on behalf of accountable humans.
+- C# Agent Graph Orchestrator experiment (PR #1): closed without merge; not integrated in this release.
+- Workload & Data Governance prototype (PR #2): separate experimental application; its browser UI is not integrated into the PM skill.
 
 ## Definition of done for v0.1
 
@@ -124,5 +153,6 @@ This tests the **decision-rights boundary**, not an LLM or an integrated PM agen
 
 ## Change log
 
+- 0.3.0 (2026-11-01): added the application/data change completion gate and explicit BA, Architecture and accountable-human evidence boundaries.
 - 0.2.0 (2026-10-11): outcome ownership, specialist-to-specialist delegation, independent verification and human exception handling documented; existing v0.1 assessor remains unchanged.
 - 0.1.0 (2026-10-11): initial autonomous program-management policy and deterministic diagnostic scaffold.
