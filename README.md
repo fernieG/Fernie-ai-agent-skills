@@ -95,6 +95,8 @@ The MyCycle scenario demonstrates PM → data validation → prediction → QA, 
 
 The C# Agent Graph Orchestrator (PR #1) and browser-based Workload & Data Governance MVP (PR #2) have not been merged to main. They are not integrated into the Program Manager Skill in this release.
 
+C# Agent Graph Orchestrator could become relevant later if a customer specifically requires a .NET deployment, Microsoft Agent Framework integration, or a separately governed enterprise runtime.
+
 ## Versioning
 
 Skills use semantic versions:
