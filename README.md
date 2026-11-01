@@ -22,6 +22,7 @@ Reusable, provider-neutral AI skills and operating contracts for product, transf
 
     skills/
       business-analysis/SKILL.md
+      architecture/SKILL.md
       program-management/
         SKILL.md
         assessor.mjs
@@ -61,7 +62,13 @@ A reusable operating model for an AI Business Analyst / MOA agent that can:
 
 The skill is intentionally domain-neutral. Application-specific specifications, data dictionaries, examples, internal processes, and business rules should be supplied separately as private context.
 
-### Program Manager / Delivery Challenger — v0.2 policy, v0.1 assessor
+### Solution Architect — v0.1
+
+`skills/architecture/SKILL.md`
+
+A source-backed architecture contract that turns validated business and data needs into functional and technical architecture, application responsibility maps, end-to-end flows, impact analysis, decision requests and verifiable conformance criteria. It does not invent business rules or approve protected architecture, data, security or release decisions.
+
+### Program Manager / Delivery Challenger — v0.3 policy, v0.1 assessor
 
 `skills/program-management/SKILL.md`
 
