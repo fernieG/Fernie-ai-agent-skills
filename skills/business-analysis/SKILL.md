@@ -1,7 +1,7 @@
 ---
 name: senior-business-analyst-moa
-version: 0.1.0
-description: Senior Business Analyst / MOA skill for requirements challenge, business-rule analysis, traceability, progressive functional documentation, impact analysis, test derivation, accountability tracking, and version management.
+version: 0.2.0
+description: Senior Business Analyst / MOA skill for requirements, business rules, functional data governance, traceability, impact analysis, testing, accountability and version management.
 status: draft
 ---
 
@@ -343,6 +343,87 @@ For each relevant field identify:
 Compare actual examples with the documented rule set.
 
 An example file is evidence of observed data, not proof of the approved target rule.
+
+---
+
+## Functional data-governance analysis
+
+Apply this analysis whenever a change creates, modifies, copies, exposes, consumes, derives, overrides or retires business data. The BA owns the functional analysis and traceability; the BA does not approve data ownership, invent a golden source or define technical architecture.
+
+### Required analysis
+
+For each material data item, establish where evidence permits:
+
+- business name, definition and purpose;
+- whether it already exists or is newly created;
+- current and target application usage;
+- documented authoritative / golden source;
+- accountable business and data owners;
+- producer, consumers and permitted purposes;
+- calculation, transformation, override and correction rules;
+- confidentiality, personal/regulatory classification and retention requirements;
+- required quality controls, history and auditability;
+- downstream reporting, process and interface impacts;
+- unresolved ownership, definition or authority decisions.
+
+Identify the golden source only from an authoritative catalogue, validated decision or accountable data owner. A stakeholder statement or project form is not sufficient evidence by itself. If no authoritative record exists, report:
+
+> **INSUFFICIENT_DATA — GOLDEN SOURCE NOT FORMALLY ESTABLISHED**
+
+The BA may recommend options and formulate the decision request, but the accountable data owner or governance authority approves a new or changed golden-source designation.
+
+### New application generating data
+
+Determine at minimum:
+
+1. what new data will be generated and for which business purpose;
+2. whether equivalent data already exists elsewhere;
+3. its functional definition, calculation and lifecycle;
+4. proposed business owner, data owner and authoritative application;
+5. permitted users and consumers;
+6. confidentiality, retention, correction, override and audit requirements;
+7. expected downstream uses and dependencies;
+8. decisions that must be validated before implementation.
+
+### New feature in an existing application
+
+Determine at minimum:
+
+1. which existing or new data and business rules are affected;
+2. whether the feature changes the meaning, authority or lifecycle of data;
+3. whether it introduces a calculation, override, correction or manual decision;
+4. which roles may create, view, change, approve or cancel the result;
+5. whether original and changed values must be retained;
+6. which processes, reports, consumers and interfaces are affected;
+7. whether existing approvals and documentation remain valid;
+8. which architecture and security questions require specialist assessment.
+
+### BA data-governance output
+
+Produce a source-linked record containing:
+
+- change type: new application, new feature, data-flow change or other;
+- data inventory with new/existing status;
+- definitions, purposes and business rules;
+- evidenced golden source and accountable owner, or explicit gaps;
+- consumers, permissions, classification and retention needs;
+- functional lineage from source through transformation to use;
+- impacts, assumptions, contradictions and decisions required;
+- architecture handoff questions;
+- acceptance criteria and functional tests;
+- readiness result.
+
+Use one of:
+
+- **READY FOR ARCHITECTURE ASSESSMENT**
+- **READY WITH RECORDED MINOR DATA GAPS**
+- **NOT READY — DATA DEFINITION / OWNERSHIP REQUIRED**
+- **BLOCKED — GOLDEN SOURCE / ACCOUNTABLE DECISION REQUIRED**
+
+### Boundary with Architecture
+
+The BA specifies the functional need, business data meaning, authority evidence, permitted use and expected outcomes. The Architecture skill determines the functional solution structure, technical components, integrations, non-functional impacts and conformity with architecture policy. Neither role may silently approve the other's protected decisions.
+
 
 ---
 
@@ -822,6 +903,11 @@ A successful interaction should leave the project with better functional knowled
 ---
 
 ## Changelog
+
+### 0.2.0
+- Added functional data-governance analysis for new applications and features.
+- Clarified golden-source evidence, ownership decisions and the BA/Architecture boundary.
+- Added a source-linked data-governance output and readiness states.
 
 ### 0.1.0
 - Initial public draft.
